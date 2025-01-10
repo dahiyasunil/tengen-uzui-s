@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const fs = require("fs");
 require("dotenv").config();
 const { initializeDatabase } = require("./db/db.connect.js");
 const Product = require("./model/product.model.js");
@@ -15,7 +16,17 @@ const corsOption = {
 const app = express();
 app.use(cors(corsOption));
 
-app.get("/products", async (req, res) => {
+app.use((req, res, next) => {
+  fs.appendFile(
+    "log.txt",
+    `${Date.now()} ${req.ip} ${req.method} ${req.path}\n`,
+    (err, data) => {
+      next();
+    }
+  );
+});
+
+app.route("/api/products").get(async (req, res) => {
   try {
     const allProducts = await Product.find();
     return res.status(200).json(allProducts);
