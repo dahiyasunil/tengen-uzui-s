@@ -2,7 +2,8 @@ const Product = require("../models/product.model");
 
 const handleGetAllProducts = async (req, res) => {
   try {
-    const allProducts = await Product.find();
+    const keywords = req.query.search;
+    const allProducts = keywords? await Product.find({ $text: { $search: keywords }}): await Product.find();
     return res.status(200).json(allProducts);
   } catch (err) {
     console.error(
