@@ -1,9 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { initializeDatabase } = require("./db/db.connect.js");
-const productRouter = require("./router/products.js");
-const { logReq } = require("./middlewares");
+const { initializeDatabase } = require("../db/db.connect.js");
+const productRouter = require("../router/products.js");
+const { logReq } = require("../middlewares/index.js");
 
 initializeDatabase();
 
