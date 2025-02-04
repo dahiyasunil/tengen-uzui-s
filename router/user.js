@@ -1,8 +1,14 @@
 const express = require("express");
-const { handleGetUser } = require("../controllers/user");
+const {
+  handleUserLogin,
+  handleAddToWishlist,
+  handleGetWishlistItems,
+} = require("../controllers/user");
 
 const router = express.Router();
 
-router.route("/:mobileNumber").get(handleGetUser);
+router.route("/login/:mobileNumber").get(handleUserLogin);
+router.route("/wishlist/add").put(handleAddToWishlist);
+router.route("/wishlist/details/:userId").get(handleGetWishlistItems);
 
 module.exports = router;
