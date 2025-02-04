@@ -98,10 +98,29 @@ const productSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-productSchema.index({ title: 'text', name: 'text', description:'text', brand:'text', category:'text', subCategory:'text', material:'text', style:'text', fit:'text', targetAudience:'text', ageGroup:'text', keywords: 'text', "colors.name":'text', "productDetails.description":'text',"productDetails.keyFeatures":'text',"productDetails.materialComposition.materials":'text',"productDetails.fit":'text',"productDetails.usage":'text'});
+productSchema.index({
+  title: "text",
+  name: "text",
+  description: "text",
+  brand: "text",
+  category: "text",
+  subCategory: "text",
+  material: "text",
+  style: "text",
+  fit: "text",
+  targetAudience: "text",
+  ageGroup: "text",
+  keywords: "text",
+  "colors.name": "text",
+  "productDetails.description": "text",
+  "productDetails.keyFeatures": "text",
+  "productDetails.materialComposition.materials": "text",
+  "productDetails.fit": "text",
+  "productDetails.usage": "text",
+});
 
 const Product = mongoose.model("Product", productSchema);
 
