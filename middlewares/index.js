@@ -11,9 +11,19 @@ const logReq = (fileName) => {
         } else {
           next();
         }
-      }
+      },
     );
   };
 };
 
-module.exports = { logReq };
+const errorHandler = (err, req, res, next) => {
+  console.error(`[ERROR] ${err.message}`);
+  const status = err.status || 500;
+  const message = err.message || "Internal Server Error";
+  return res.status(status).json({
+    message,
+    error: { err },
+  });
+};
+
+module.exports = { logReq, errorHandler };
