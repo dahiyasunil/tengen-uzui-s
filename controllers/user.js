@@ -25,10 +25,30 @@ const handleAddToWishlist = async (req, res, next) => {
       { $addToSet: { wishlist: productObjId } },
       { new: true },
     );
-    res.status(200).json({ user });
+    console.log(user);
+    res.status(200).json({ "wishlist":user.wishlist });
   } catch (err) {
     console.error(
       `An error occured while trying to add product to wishlist.\nError:\n${err}`,
+    );
+    next(err);
+  }
+};
+
+const handleRemoveFromWishlist = async (req, res, next) => {
+  try {
+    const { userId, productObjId } = req.body;
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { wishlist: productObjId } },
+      { new: true },
+    );
+    console.log(user);
+    
+    res.status(200).json({ "wishlist":user.wishlist });
+  } catch (err) {
+    console.error(
+      `An error occured while trying to remove product to wishlist.\nError:\n${err}`,
     );
     next(err);
   }
@@ -50,5 +70,6 @@ const handleGetWishlistItems = async (req, res, next) => {
 module.exports = {
   handleUserLogin,
   handleAddToWishlist,
+  handleRemoveFromWishlist,
   handleGetWishlistItems,
 };
