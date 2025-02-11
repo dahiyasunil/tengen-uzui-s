@@ -43,8 +43,6 @@ const handleRemoveFromWishlist = async (req, res, next) => {
       { $pull: { wishlist: productObjId } },
       { new: true },
     );
-    console.log(user);
-
     res.status(200).json({ wishlist: user.wishlist });
   } catch (err) {
     console.error(
@@ -63,8 +61,6 @@ const handleGetWishlistItems = async (req, res, next) => {
       enrichedProduct.isWishlisted = true;
       return enrichedProduct;
     });
-    console.log(wishlistedItems);
-
     return res.status(200).json({ wishlist: wishlistedItems });
   } catch (err) {
     console.error(
