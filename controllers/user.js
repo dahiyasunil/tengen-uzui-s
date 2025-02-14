@@ -25,7 +25,6 @@ const handleAddToWishlist = async (req, res, next) => {
       { $addToSet: { wishlist: productObjId } },
       { new: true },
     );
-    console.log(user);
     res.status(200).json({ wishlist: user.wishlist });
   } catch (err) {
     console.error(
@@ -70,9 +69,48 @@ const handleGetWishlistItems = async (req, res, next) => {
   }
 };
 
+const handleAddProductToCart = async (req, res, next) => {
+  try {
+    const { userId, productObjId, quantity } = req.body;    
+    const user = await User.findById(userId);
+
+    const existingItem = user.bag.findIndex(
+      (item) => item.item.toString() === productObjId,
+    );
+    
+    if (existingItem != -1) {
+      user.bag[existingItem].quantity += quantity;
+    } else {
+      user.bag.push({ item: productObjId, quantity });
+    }    
+    await user.save();
+    res.status(200).json({ cart: user.bag });
+  } catch (err) {
+    console.error(
+      `An error occured while trying to add product to cart.\nError:\n${err}`,
+    );
+    next(err);
+  }
+};
+
+const handleGetCartItems= async(req,res,next)=>{
+try{
+  const {userId} = req.params;
+  const user = await User.findOne({ _id: userId }).populate("bag.item"); 
+  return res.status(200).json({ cart: user.bag });
+}catch(err){
+  console.error(
+    `An error occured while trying to fetch cart items.\nError:\n${err}`,
+  );
+  next(err);
+}
+}
+
 module.exports = {
   handleUserLogin,
   handleAddToWishlist,
   handleRemoveFromWishlist,
   handleGetWishlistItems,
+  handleAddProductToCart,
+  handleGetCartItems
 };
