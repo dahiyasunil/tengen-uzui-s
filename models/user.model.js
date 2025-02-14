@@ -14,7 +14,12 @@ const userSchema = new mongoose.Schema({
   },
   addresses: { type: Array, default: [] },
   wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-  bag: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+  bag: [
+    {
+      item: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+      quantity: { type: Number, required: true },
+    },
+  ],
   orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 });
 
