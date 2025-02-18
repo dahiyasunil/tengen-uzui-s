@@ -7,6 +7,7 @@ const {
   handleAddProductToCart,
   handleRemoveProductFromCart,
   handleGetCartItems,
+  handleUpdateItemQuantity
 } = require("../controllers/user");
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.route("/wishlist/details/:userId").get(handleGetWishlistItems);
 router.route("/cart/add").put(handleAddProductToCart);
 router.route("/cart/remove").put(handleRemoveProductFromCart);
 router.route("/cart/details/:userId").get(handleGetCartItems);
+router.route("/cart/item/quantity").put(handleUpdateItemQuantity);
 
 module.exports = router;

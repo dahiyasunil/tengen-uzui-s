@@ -124,6 +124,20 @@ const handleGetCartItems = async (req, res, next) => {
   }
 };
 
+const handleUpdateItemQuantity = async(req,res,next)=>{
+  try {
+    const {userId, productObjId, quantity} = req.body;    
+    const user = await User.findById(userId);    
+    const itemIndex = user.bag.findIndex(item=>item.item.toString() === productObjId);  
+    user.bag[itemIndex].quantity = quantity;
+    await user.save();
+    return res.status(200).json({ cart: user.bag })
+  } catch (err) {
+    console.error(`An error occured while trying to update item quanity.\nError:\n${err}`);
+    next(err)
+  }
+}
+
 module.exports = {
   handleUserLogin,
   handleAddToWishlist,
@@ -132,4 +146,5 @@ module.exports = {
   handleAddProductToCart,
   handleRemoveProductFromCart,
   handleGetCartItems,
+  handleUpdateItemQuantity
 };
