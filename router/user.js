@@ -7,7 +7,7 @@ const {
   handleAddProductToCart,
   handleRemoveProductFromCart,
   handleGetCartItems,
-  handleUpdateItemQuantity
+  handleUpdateItemQuantity,
 } = require("../controllers/user");
 
 const router = express.Router();
