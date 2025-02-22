@@ -37,6 +37,7 @@ const handleAddToWishlist = async (req, res, next) => {
 const handleRemoveFromWishlist = async (req, res, next) => {
   try {
     const { userId, productObjId } = req.body;
+    console.log(req.body);
     const user = await User.findByIdAndUpdate(
       userId,
       { $pull: { wishlist: productObjId } },
@@ -142,6 +143,26 @@ const handleUpdateItemQuantity = async (req, res, next) => {
   }
 };
 
+const handleUpdateUserPersonalInfo = async(req, res, next) => {
+  try {
+    const {userId, payload} = req.body;
+    const user = await User.findById(userId);
+    if(payload.name && payload.name.trim() !== ""){
+      user.name = payload.name.trim();
+    }
+    if(payload.email && payload.email.trim() !== ""){
+      user.emailId = payload.email.trim();
+    }
+    await user.save();
+    return res.status(200).json({user})
+  } catch (err) {
+    console.error(
+      `An error occured while trying to update user personal information.\nError:\n${err}`,
+    );
+    next(err);
+  }
+};
+
 module.exports = {
   handleUserLogin,
   handleAddToWishlist,
@@ -151,4 +172,5 @@ module.exports = {
   handleRemoveProductFromCart,
   handleGetCartItems,
   handleUpdateItemQuantity,
+  handleUpdateUserPersonalInfo,
 };
