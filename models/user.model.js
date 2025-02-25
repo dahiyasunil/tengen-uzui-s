@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Address = require("./address.model");
 
 const userSchema = new mongoose.Schema({
   mobileNumber: {
@@ -12,7 +13,7 @@ const userSchema = new mongoose.Schema({
   emailId: {
     type: String,
   },
-  addresses: { type: Array, default: [] },
+  addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
   wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
   bag: [
     {
