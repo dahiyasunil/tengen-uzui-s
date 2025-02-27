@@ -12,7 +12,7 @@ const {
   handleGetAllAddress,
   handleAddAddress,
   handleEditAddress,
-  handleDeleteAddress
+  handleDeleteAddress,
 } = require("../controllers/user");
 
 const router = express.Router();

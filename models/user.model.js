@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     {
       item: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
       quantity: { type: Number, required: true },
+      size: { type: String, required: true },
     },
   ],
   orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],

@@ -72,17 +72,20 @@ const handleGetWishlistItems = async (req, res, next) => {
 
 const handleAddProductToCart = async (req, res, next) => {
   try {
-    const { userId, productObjId, quantity } = req.body;
+    const {
+      userId,
+      itemData: { productObjId, quantity, size },
+    } = req.body;
     const user = await User.findById(userId);
 
     const existingItem = user.bag.findIndex(
-      (item) => item.item.toString() === productObjId,
+      (item) => item.item.toString() === productObjId && item.size === size,
     );
 
     if (existingItem != -1) {
       user.bag[existingItem].quantity += quantity;
     } else {
-      user.bag.push({ item: productObjId, quantity });
+      user.bag.push({ item: productObjId, quantity, size });
     }
     await user.save();
     res.status(200).json({ cart: user.bag });
@@ -96,14 +99,20 @@ const handleAddProductToCart = async (req, res, next) => {
 
 const handleRemoveProductFromCart = async (req, res, next) => {
   try {
-    const { userId, productObjId } = req.body;
+    const {
+      userId,
+      itemData: { productObjId, size },
+    } = req.body;
     const user = await User.findById(userId);
     const itemIndex = user.bag.findIndex(
-      (item) => item.item.toString() === productObjId,
+      (item) => item.item.toString() === productObjId && item.size === size,
     );
+    if (itemIndex === -1) {
+      return res.status(404).json({ error: "Could not find product" });
+    }
     user.bag.splice(itemIndex, 1);
     await user.save();
-    res.status(200).json({ cart: user.bag });
+    return res.status(200).json({ cart: user.bag });
   } catch (err) {
     console.error(
       `An error occured while trying to remove product from cart.\nError:\n${err}`,
@@ -132,6 +141,9 @@ const handleUpdateItemQuantity = async (req, res, next) => {
     const itemIndex = user.bag.findIndex(
       (item) => item.item.toString() === productObjId,
     );
+    if (itemIndex === -1) {
+      return res.status(404).json({ error: "Could not find item in bag." });
+    }
     user.bag[itemIndex].quantity = quantity;
     await user.save();
     return res.status(200).json({ cart: user.bag });
@@ -184,9 +196,7 @@ const handleAddAddress = async (req, res, next) => {
       !payload.townCity ||
       !payload.state
     ) {
-      return res
-        .status(400)
-        .json({ message: "Invalid address." });
+      return res.status(400).json({ message: "Invalid address." });
     }
 
     const newAddress = new Address(payload);
@@ -221,7 +231,7 @@ const handleGetAllAddress = async (req, res, next) => {
 const handleEditAddress = async (req, res, next) => {
   try {
     const { userId, payload } = req.body;
-    
+
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -231,24 +241,26 @@ const handleEditAddress = async (req, res, next) => {
       typeof payload.address !== "object" ||
       Array.isArray(payload.address) ||
       !payload.addressObjId ||
-      payload.address  === null ||
+      payload.address === null ||
       !payload.address.name ||
       !payload.address.mobile ||
       !Number(payload.address.mobile) ||
-      String(payload.address.mobile).length !==10 ||
+      String(payload.address.mobile).length !== 10 ||
       !Number(payload.address.pincode) ||
-      String(payload.address.pincode).length !==6 ||
+      String(payload.address.pincode).length !== 6 ||
       !payload.address.pincode ||
       !payload.address.addressLine1 ||
       !payload.address.addressLine2 ||
       !payload.address.townCity ||
       !payload.address.state
     ) {
-      return res
-        .status(400)
-        .json({ message: "Invalid Address" });
+      return res.status(400).json({ message: "Invalid Address" });
     }
-    const address = await Address.findByIdAndUpdate(payload.addressObjId,payload.address,{ new: true })
+    const address = await Address.findByIdAndUpdate(
+      payload.addressObjId,
+      payload.address,
+      { new: true },
+    );
     await address.save();
     return res.status(200).json({ addresses: user.addresses });
   } catch (err) {
@@ -261,16 +273,18 @@ const handleEditAddress = async (req, res, next) => {
 
 const handleDeleteAddress = async (req, res, next) => {
   try {
-    const { userId, addressObjId } = req.query;    
+    const { userId, addressObjId } = req.query;
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const removeAddressIndex = user.addresses.findIndex((address)=> address.toString() === addressObjId);
-    if(removeAddressIndex === -1){
+    const removeAddressIndex = user.addresses.findIndex(
+      (address) => address.toString() === addressObjId,
+    );
+    if (removeAddressIndex === -1) {
       return res.status(404).json({ message: "Address not found!" });
     }
-    user.addresses.splice(removeAddressIndex,1);
+    user.addresses.splice(removeAddressIndex, 1);
     await user.save();
     return res.status(200).json({ addresses: user.addresses });
   } catch (err) {
@@ -294,5 +308,5 @@ module.exports = {
   handleAddAddress,
   handleGetAllAddress,
   handleEditAddress,
-  handleDeleteAddress
+  handleDeleteAddress,
 };
