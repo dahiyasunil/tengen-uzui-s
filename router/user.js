@@ -6,6 +6,7 @@ const {
   handleGetWishlistItems,
   handleAddProductToCart,
   handleRemoveProductFromCart,
+  handleClearCart,
   handleGetCartItems,
   handleUpdateItemQuantity,
   handleUpdateUserPersonalInfo,
@@ -23,6 +24,7 @@ router.route("/wishlist/remove").put(handleRemoveFromWishlist);
 router.route("/wishlist/details/:userId").get(handleGetWishlistItems);
 router.route("/cart/add").put(handleAddProductToCart);
 router.route("/cart/remove").put(handleRemoveProductFromCart);
+router.route("/cart/clear").put(handleClearCart);
 router.route("/cart/details/:userId").get(handleGetCartItems);
 router.route("/cart/item/quantity").put(handleUpdateItemQuantity);
 router.route("/update/details").put(handleUpdateUserPersonalInfo);

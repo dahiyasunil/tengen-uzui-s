@@ -121,6 +121,21 @@ const handleRemoveProductFromCart = async (req, res, next) => {
   }
 };
 
+const handleClearCart = async (req, res, next) => {
+  try {
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+    user.bag.splice(0, user.bag.length);
+    await user.save();
+    return res.status(200).json({ cart: user.bag });
+  } catch (err) {
+    console.error(
+      `An error occured while trying to remove product from cart.\nError:\n${err}`,
+    );
+    next(err);
+  }
+};
+
 const handleGetCartItems = async (req, res, next) => {
   try {
     const { userId } = req.params;
@@ -303,6 +318,7 @@ module.exports = {
   handleGetWishlistItems,
   handleAddProductToCart,
   handleRemoveProductFromCart,
+  handleClearCart,
   handleGetCartItems,
   handleUpdateItemQuantity,
   handleUpdateUserPersonalInfo,
