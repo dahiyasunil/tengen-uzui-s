@@ -285,6 +285,7 @@ const handleDeleteAddress = async (req, res, next) => {
       return res.status(404).json({ message: "Address not found!" });
     }
     user.addresses.splice(removeAddressIndex, 1);
+    await Address.findByIdAndDelete(addressObjId);
     await user.save();
     return res.status(200).json({ addresses: user.addresses });
   } catch (err) {
