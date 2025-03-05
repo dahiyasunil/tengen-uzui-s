@@ -311,6 +311,51 @@ const handleDeleteAddress = async (req, res, next) => {
   }
 };
 
+const handleOrder = async (req, res, next) => {
+  try {
+    const { userId, deliveryAddress } = req.body;
+    const address = await Address.findById(deliveryAddress._id);
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    await user.populate("bag.item");
+
+    const order = {};
+    order.items = user.bag.map((item) => ({
+      item: item.item._id,
+      quantity: item.quantity,
+      size: item.size,
+      price: item.item.price.amount,
+      discount: item.item.discount?.percentage,
+    }));
+
+    order.totalDiscount = order.items.reduce((acc, curr) => {
+      if (curr.discount) {
+        acc += Math.round((curr.price * curr.discount) / 100) * curr.quantity;
+      }
+      return acc;
+    }, 0);
+
+    order.totalPrice = order.items.reduce((acc, curr) => {
+      acc += curr.price * curr.quantity;
+      return acc;
+    }, 0);
+
+    order.deliveryAddress = address;
+    user.orders.unshift(order);
+
+    await user.save();
+    return res.status(200).json({ orders: user.orders });
+  } catch (err) {
+    console.error(
+      `An error occured while trying to place order!.\nError:\n${err}`,
+    );
+    next(err);
+  }
+};
+
 module.exports = {
   handleUserLogin,
   handleAddToWishlist,
@@ -326,4 +371,5 @@ module.exports = {
   handleGetAllAddress,
   handleEditAddress,
   handleDeleteAddress,
+  handleOrder,
 };

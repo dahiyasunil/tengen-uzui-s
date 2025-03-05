@@ -22,7 +22,22 @@ const userSchema = new mongoose.Schema({
       size: { type: String, required: true },
     },
   ],
-  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+  orders: [
+    {
+      items: [
+        {
+          item: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+          quantity: { type: Number, required: true },
+          size: { type: String, required: true },
+          price: { type: Number, required: true },
+          discount: { type: Number },
+        },
+      ],
+      deliveryAddress: { type: Object, required: true },
+      totalDiscount: { type: Number, required: true },
+      totalPrice: { type: Number, required: true },
+    },
+  ],
 });
 
 const User = mongoose.model("User", userSchema);

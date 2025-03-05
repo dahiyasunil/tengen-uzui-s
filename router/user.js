@@ -14,6 +14,7 @@ const {
   handleAddAddress,
   handleEditAddress,
   handleDeleteAddress,
+  handleOrder,
 } = require("../controllers/user");
 
 const router = express.Router();
@@ -29,6 +30,7 @@ router.route("/cart/details/:userId").get(handleGetCartItems);
 router.route("/cart/item/quantity").put(handleUpdateItemQuantity);
 router.route("/update/details").put(handleUpdateUserPersonalInfo);
 router.route("/addresses/:userId").get(handleGetAllAddress);
+router.route("/placeOrder").post(handleOrder);
 router
   .route("/address")
   .post(handleAddAddress)
