@@ -356,6 +356,23 @@ const handleOrder = async (req, res, next) => {
   }
 };
 
+const handleGetOrders = async (req, res, next) => {
+  try {
+    const { userId } = req.query;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    await user.populate("orders.items.item");
+    return res.status(200).json({ orders: user.orders });
+  } catch (err) {
+    console.error(
+      `An error occured while trying to get orders!.\nError:\n${err}`,
+    );
+    next(err);
+  }
+};
+
 module.exports = {
   handleUserLogin,
   handleAddToWishlist,
@@ -372,4 +389,5 @@ module.exports = {
   handleEditAddress,
   handleDeleteAddress,
   handleOrder,
+  handleGetOrders,
 };
