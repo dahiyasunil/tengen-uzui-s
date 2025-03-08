@@ -2,47 +2,49 @@ const Product = require("../models/product.model");
 const User = require("../models/user.model");
 
 const getProducts = async (keywords) => {
-  return keywords
-    ? await Product.find({ $text: { $search: keywords } })
-    : await Product.find();
+  try {
+    if (keywords) {
+      return await Product.find({ $text: { $search: keywords } });
+    }
+    return await Product.find();
+  } catch (err) {
+    console.error(`Error fetching products: ${err}`);
+    throw err;
+  }
 };
 
 const enrichWithWishlistFlag = (products, wishlistItems) => {
-  const enrichedProducts = products.map((product) => {
-    const wishlistedItem = wishlistItems.find(
-      (item) => item === product._id.toString(),
-    );
-    let enrichedProduct = JSON.parse(JSON.stringify(product));
-    if (wishlistedItem) {
-      enrichedProduct.isWishlisted = true;
-    } else {
-      enrichedProduct.isWishlisted = false;
-    }
-    return enrichedProduct;
+  return products.map((product) => {
+    const isWishlisted = wishlistItems.includes(product._id.toString());
+    return {
+      ...product.toObject(),
+      isWishlisted,
+    };
   });
-  return enrichedProducts;
 };
 
 const handleGetAllProducts = async (req, res, next) => {
+  const keywords = req.query.search;
+  const mobileNo = req.get("X-Mobile-No");
+
   try {
-    const keywords = req.query.search;
-    const mobileNo = req.get("X-Mobile-No");
-    let products = [];
+    let products = await getProducts(keywords);
+
     if (mobileNo) {
       const user = await User.findOne({ mobileNumber: mobileNo });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
       const wishlistItems = user.wishlist.map((item) => item.toString());
-      products = enrichWithWishlistFlag(
-        await getProducts(keywords),
-        wishlistItems,
-      );
-    } else {
-      products = await getProducts(keywords);
+      products = enrichWithWishlistFlag(products, wishlistItems);
     }
+
+    console.log(`Fetched ${products.length} products`);
+
     return res.status(200).json(products);
   } catch (err) {
-    console.error(
-      "An error occured while trying to fetch all products.\nError: \n" + err,
-    );
+    console.error(`Error fetching products for mobileNo ${mobileNo}:`, err);
     next(err);
   }
 };
