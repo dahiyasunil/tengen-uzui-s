@@ -80,14 +80,13 @@ const handleAddProductToCart = async (req, res, next) => {
 
     const existingItem = user.bag.findIndex(
       (item) => item.item.toString() === productObjId && item.size === size,
-    );
+    );    
 
-    if (existingItem != -1) {
-      user.bag[existingItem].quantity += quantity;
-    } else {
+    if (existingItem === -1) {
       user.bag.push({ item: productObjId, quantity, size });
+      await user.save();
     }
-    await user.save();
+    
     res.status(200).json({ cart: user.bag });
   } catch (err) {
     console.error(
