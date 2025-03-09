@@ -164,12 +164,12 @@ const handleAddProductToCart = async (req, res, next) => {
 const handleRemoveProductFromCart = async (req, res, next) => {
   const {
     userId,
-    itemData: { productObjId, quantity, size },
+    itemData: { productObjId, size },
   } = req.body;
 
-  if (!userId || !productObjId || !quantity || !size) {
+  if (!userId || !productObjId || !size) {
     return res.status(400).json({
-      message: "userId, productObjId, quantity and size are required",
+      message: "userId, productObjId and size are required",
     });
   }
 
